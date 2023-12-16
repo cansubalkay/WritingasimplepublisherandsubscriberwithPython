@@ -1,0 +1,5 @@
+## setup.cfg DOSYA İÇERİĞİ BU ŞEKİLDE OLMALIDIR
+[develop]
+script-dir=$base/lib/cansu
+[install]
+install-scripts=$base/lib/cansu

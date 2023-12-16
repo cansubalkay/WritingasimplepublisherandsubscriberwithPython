@@ -1,0 +1,80 @@
+Writing a Simple Publisher and Subscriber (Python)
+
+
+KONUSU HAKKINDAKÝ NOTLARIM;
+ÝLK ÖNCE ÇALIÞMA ALANI(WORK SPACE) OLUÞTURALIM:
+1. Herhangi bir karýþýklýk yaþanmamasý adýna her yeni çalýþma alaný için yeni bir dizin oluþturulmalýdýr.
+2. Repoyu klonlayalým. Repoyu daha önce oluþturduðumuz src dizinine klonlamak karýþýklýklarý önleyecektir.
+3. Repolarýn birden fazla þubesi olabilir. Bu sebepten repo kopyalandýðýnda -b baðýmsýz deðiþkeni eklenmelidir örnek;
+git clone https://github.com/ros/ros_tutorials.git -b foxy-devel
+4. Çalýþma alaný oluþturulmadan önce paket baðýmlýlýklarý çözülmelidir.
+5. Colcon ile çalýþtýrma alaný oluþturma
+Note
+Colcon yapýsý için diðer yararlý argümanlar:
+
+    • --packages-up-to istediðiniz paketi ve tüm baðýmlýlýklarýný oluþturur, ancak çalýþma alanýnýn tamamýný oluþturmaz (zaman kazandýrýr)
+    • --symlink-install Python komut dosyalarýný her deðiþtirdiðinizde sizi yeniden oluþturma zorunluluðundan kurtarýr
+    • --event-handlers console_direct+ Oluþturma sýrasýnda konsol çýktýsý nasýl olur (aksi halde günlük dizininde bulunabilir)
+6. Kaynaklama iþlemi yapýlur. Bu adýmdan sonra bu terminaldeki komutlar bizim kodumuza uygun þekilde çalýþacaktýr. Her terminal açýldýðýnda kaynaklamamýz gerekir.
+
+PAKET OLUÞTURMA
+Ros2 Paketi: Paket, Ros2 kodu için bir organizasyon birimidir. Kodun yðklenebilmesi veya baþkalarýyla paylaþýlmasý için kodun bir paket halinde düzenlenmesi gerekir.
+
+Bir Ros2 paketini þunlar oluþturur.(Python)
+- package.xml : Paketle ilgili meta bilgileri içeren dosya
+- resource/<package_name> : Paket için iþaretleyici dosyasý
+- setup.cfg : Bir pakette yürütülebilir dosyalar olduðunda gereklidir.
+- setup.py : paketin nasýl kurulacaðýna iliþkin talimatlar içeren
+- <package_name> Ros2 araçlarý tarafýndan paketinizi bulmak için kullanýlan, paketinizle ayný adý taþýyan bir dizin þunlarý içerir: _init_.py
+
+? Paketleri src klasöründe oluþturacaðýmýzdan, paket oluþtururken src klasöründe olduðumuzdan emin olmalýyýz. 
+ cd  ~/ros2_ws/src komutuyla emin olabiliriz.
+
+?ROS2 de paket oluþturulurken derleme sistemi olarak ament I ve derleme aracý olarak colcon u kullanýr.
+
+
+Paketleri bir çalýþma alanýna yerleþtirmek önemlidir. Diðer türlü her paketin ayrý ayrý oluþturulmasý gerekir.
+
+
+
+!!1 Yeni bir WorkSpace oluþturulmadan önce terminalde source /opt/ros/foxy/setup.bash
+ kosu ile kaynaklama yapýlmalýdýr.
+
+
+Þimdi sýra paket oluþturup, ismini kendimizin belirleyeceði bir konu üzerinden gönderelim.
+
+
+ros2 pkg create --build-type ament_python <packet_name> 
+Komutu ile yeni bir paket oluþturulur. Bu kodu karýþýklýk olmamasý adýna daha önce oluþturduðumuz ros2_ws dizininde çalýþtýrmak gerekir. 
+Daha sonra paketimizin olduðu klasöre gideriz. Bu klasörün içinde paketle ayný isimde bir klasör daha bulunuyor. Bunun içine de girip
+wgethttps://raw.githubusercontent.com/ros2/examples/foxy/rclpy/topics/minimal_publisher/examples_rclpy_minimal_publisher/publisher_member_function.py
+kodunu çalýþtýrýrsak hazýr olarak bulunan örnek bir konuþmacý paketini indirebiliriz. 
+Bu kodu çalýþtýrdýktan sonra dizinin içinde publisher_member_function.py adýnda bir dosya olacak. Metin düzenleyici ile bu kodu açýp ‘topic’ bulunan kýsma konumuzun adýný yazarak deðiþtirebiliriz.  
+Daha sonra package.xml dosyasýný açýp description, maintainer ve license bölümlerini ayarlayýp, nodelarýmýzýn içe aktarýlabilmesi için 
+<exec_depend>rclpy</exec_depend>
+<exec_depend>std_msgs</exec_depend>
+Satýrlarýný license satýrýnýn altýna eklenmesi gerekir. Tabi bu iþlemlerden sonra düzenlediðimiz dosyalarý yeni haliyle kaydetmeyi unutmamalyýz.
+wgethttps://raw.githubusercontent.com/ros2/examples/foxy/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber/subscriber_member_function.py
+Kodunu terminalde çalýþtýrdýktan sonra yukarýda publisherdakine benzer bir þekilde örnek subscriber kodu ve dosyasý gelecektir. 
+Burada da kodu metin düzenleyici ile açýp topici yukarýda publisher kodunda yaptýðýmýz konu ismi ile ayný olacak þekilde yazmalýyýz. 
+!! Yukarýda bahsettiðim tüm paket dosyalarýný ve kodlarýný github hesabýmda bulabilirsiniz.
+
+
+
+Tüm bu iþlemleri yaptýktan sonra derleyip çalýþtýrmak için;
+cd ros2_ws ile works space e gidilir. Burada
+rosdep install -i --from-path src --rosdistro foxy -y
+ve
+colcon build --packages-select <packet_name>
+kodlarý çalýþtýrýlýr. Ve yeni bir terminal açýlýp (yukarýda bahsedildiði gibi  her yeni terminalde kurulum dosyalarýný kaynaklayýn)
+source install/setup.bash
+
+ve þimdi de talkerý yani publisherý çalýþtýrmak için:
+ros2 run <package_name> talker komutunu çalýþtýrýrsanýz kaynak kodlarýnda da belirtilen mesaj sürekli ekranda dönecektir. Durdurmak için ctrl+c girilir.
+Subscriber için de yeni bir terminal açýp kurulum dosyalarýný kaynakladýktan sonra:
+ros2 run <package_name> listener komutu çalýþtýrýlýrsa talkerýn yayýnladýðý mesajý I heard: olarak ekranda döndürmeye baþlayacaktýr.  Durdurmak için ctrl+c girilir.
+
+Talker mesaj yayýnlarken ve listener mesajý dinler durumdayken yeni bir terminal açýp ros2 topic echo <topic_name> komutu çalýþtýrýlýrsa bir düðümden diðer düðüme bu topic üzerinden gönderilen data ekranda dönecektir. rqt_graph ile de þemasal olarak node ve topicleri görüntüleyebilirsiniz.
+Yine bu repo içine çýktýlarý görsel olarak koyacaðým.
+
+
